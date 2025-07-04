@@ -36,8 +36,6 @@ public class QPostImage extends EntityPathBase<PostImage> {
 
     public final StringPath imageUrl = createString("imageUrl");
 
-    public final BooleanPath isRepresent = createBoolean("isRepresent");
-
     public final StringPath originName = createString("originName");
 
     public final com.outsta.sns.domain.post.QPost post;
@@ -63,7 +61,7 @@ public class QPostImage extends EntityPathBase<PostImage> {
 
     public QPostImage(Class<? extends PostImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.post = inits.isInitialized("post") ? new com.outsta.sns.domain.post.QPost(forProperty("post")) : null;
+        this.post = inits.isInitialized("post") ? new com.outsta.sns.domain.post.QPost(forProperty("post"), inits.get("post")) : null;
     }
 
 }

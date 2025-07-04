@@ -3,7 +3,8 @@ package com.outsta.sns.domain.enums;
 public enum Activation implements EnumUtil {
     ACTIVE("활동중"),
     SUSPENDED("정지"),
-    DELETED("회원 탈퇴"),
+    WAITING_DELETED("회원탈퇴 대기"),
+    DELETED("회원탈퇴"),
     ;
 
     private final String value;

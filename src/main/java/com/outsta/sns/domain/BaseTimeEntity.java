@@ -25,4 +25,12 @@ public class BaseTimeEntity {
     private LocalDateTime updatedAt;
 
     private LocalDate deletedAt;
+
+    public void deleteNow() {
+        this.deletedAt = LocalDate.now();
+    }
+
+    public void cancelDelete() {
+        this.deletedAt = null;
+    }
 }

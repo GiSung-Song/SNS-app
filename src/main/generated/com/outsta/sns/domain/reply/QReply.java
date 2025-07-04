@@ -20,7 +20,7 @@ public class QReply extends EntityPathBase<Reply> {
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QReply reply1 = new QReply("reply1");
+    public static final QReply reply = new QReply("reply");
 
     public final com.outsta.sns.domain.QBaseTimeEntity _super = new com.outsta.sns.domain.QBaseTimeEntity(this);
 
@@ -36,9 +36,9 @@ public class QReply extends EntityPathBase<Reply> {
 
     public final com.outsta.sns.domain.member.entity.QMember member;
 
-    public final com.outsta.sns.domain.post.QPost post;
+    public final QReply parent;
 
-    public final QReply reply;
+    public final com.outsta.sns.domain.post.QPost post;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -62,8 +62,8 @@ public class QReply extends EntityPathBase<Reply> {
     public QReply(Class<? extends Reply> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new com.outsta.sns.domain.member.entity.QMember(forProperty("member")) : null;
-        this.post = inits.isInitialized("post") ? new com.outsta.sns.domain.post.QPost(forProperty("post")) : null;
-        this.reply = inits.isInitialized("reply") ? new QReply(forProperty("reply"), inits.get("reply")) : null;
+        this.parent = inits.isInitialized("parent") ? new QReply(forProperty("parent"), inits.get("parent")) : null;
+        this.post = inits.isInitialized("post") ? new com.outsta.sns.domain.post.QPost(forProperty("post"), inits.get("post")) : null;
     }
 
 }

@@ -2,16 +2,14 @@ package com.outsta.sns.domain.tag;
 
 import com.outsta.sns.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "tags")
+@Table(name = "tag")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Tag extends BaseTimeEntity {
 
     @Id
@@ -19,5 +17,5 @@ public class Tag extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    private String tagName;
 }

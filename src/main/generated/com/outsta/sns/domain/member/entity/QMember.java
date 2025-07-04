@@ -47,7 +47,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public final EnumPath<com.outsta.sns.domain.enums.Role> role = createEnum("role", com.outsta.sns.domain.enums.Role.class);
 
-    public final NumberPath<Long> stoppedCount = createNumber("stoppedCount", Long.class);
+    public final NumberPath<Integer> stoppedCount = createNumber("stoppedCount", Integer.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

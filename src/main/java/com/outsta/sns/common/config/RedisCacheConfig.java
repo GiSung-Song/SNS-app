@@ -12,19 +12,33 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
+/**
+ * Redis 캐시 설정 클래스
+ */
 @Configuration
 @EnableCaching
 public class RedisCacheConfig {
 
+    /**
+     * RedisCacheManager Bean 등록
+     */
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+
+                // 캐시 기본 만료 시간 30분
                 .entryTtl(Duration.ofMinutes(30))
+
+                // null 값 캐싱하지 않음
                 .disableCachingNullValues()
+
+                // Key 직렬화 방식 : 문자열 직렬화
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new StringRedisSerializer())
                 )
+
+                // Value 직렬화 방식 : JSON 직렬화 사용
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new GenericJackson2JsonRedisSerializer()

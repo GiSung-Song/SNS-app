@@ -54,6 +54,11 @@ dependencies {
 	// logstash Logback Encoder
 	implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 
+	implementation("org.springframework.retry:spring-retry")
+	implementation("org.springframework:spring-aspects")
+
+	implementation("io.github.cdimascio:java-dotenv:5.2.2")
+
 	// JWT
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")

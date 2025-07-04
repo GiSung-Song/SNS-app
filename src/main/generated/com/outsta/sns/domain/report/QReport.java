@@ -32,9 +32,9 @@ public class QReport extends EntityPathBase<Report> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath reason = createString("reason");
+    public final com.outsta.sns.domain.member.entity.QMember member;
 
-    public final com.outsta.sns.domain.member.entity.QMember reporter;
+    public final StringPath reason = createString("reason");
 
     public final EnumPath<com.outsta.sns.domain.enums.ReportType> reportType = createEnum("reportType", com.outsta.sns.domain.enums.ReportType.class);
 
@@ -61,7 +61,7 @@ public class QReport extends EntityPathBase<Report> {
 
     public QReport(Class<? extends Report> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.reporter = inits.isInitialized("reporter") ? new com.outsta.sns.domain.member.entity.QMember(forProperty("reporter")) : null;
+        this.member = inits.isInitialized("member") ? new com.outsta.sns.domain.member.entity.QMember(forProperty("member")) : null;
     }
 
 }

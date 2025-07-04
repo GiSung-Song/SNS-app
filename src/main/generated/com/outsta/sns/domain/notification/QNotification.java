@@ -1,4 +1,4 @@
-package com.outsta.sns.domain.profile.notification;
+package com.outsta.sns.domain.notification;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNotification extends EntityPathBase<Notification> {
 
-    private static final long serialVersionUID = -1806780764L;
+    private static final long serialVersionUID = 1201346985L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -32,9 +32,9 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final BooleanPath isRead = createBoolean("isRead");
-
     public final EnumPath<com.outsta.sns.domain.enums.NotificationType> notificationType = createEnum("notificationType", com.outsta.sns.domain.enums.NotificationType.class);
+
+    public final BooleanPath readYn = createBoolean("readYn");
 
     public final com.outsta.sns.domain.member.entity.QMember receiver;
 

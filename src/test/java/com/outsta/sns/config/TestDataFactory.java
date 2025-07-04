@@ -1,13 +1,19 @@
 package com.outsta.sns.config;
 
+import com.outsta.sns.common.config.security.CustomUserDetails;
 import com.outsta.sns.domain.enums.Gender;
-import com.outsta.sns.domain.member.dto.repository.MemberRepository;
+import com.outsta.sns.domain.enums.Role;
+import com.outsta.sns.domain.member.repository.MemberRepository;
 import com.outsta.sns.domain.member.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class TestDataFactory {
@@ -18,7 +24,7 @@ public class TestDataFactory {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Member createMember() {
+    public Member createTester() {
         Member member = Member.builder()
                 .name("테스터")
                 .password(passwordEncoder.encode("password"))
@@ -26,8 +32,67 @@ public class TestDataFactory {
                 .email("tester@email.com")
                 .birth(LocalDate.of(1989, 11, 3))
                 .gender(Gender.MALE)
+                .role(Role.MEMBER)
                 .build();
 
         return memberRepository.save(member);
+    }
+
+    public Member createFaker() {
+        Member member = Member.builder()
+                .name("페이커")
+                .password(passwordEncoder.encode("password"))
+                .nickname("페이커")
+                .email("faker@email.com")
+                .birth(LocalDate.of(1996, 3, 7))
+                .gender(Gender.MALE)
+                .role(Role.MEMBER)
+                .build();
+
+        return memberRepository.save(member);
+    }
+
+    public Member createDancer() {
+        Member member = Member.builder()
+                .name("댄서")
+                .password(passwordEncoder.encode("password"))
+                .nickname("댄서")
+                .email("dancer@email.com")
+                .birth(LocalDate.of(2001, 7, 25))
+                .gender(Gender.FEMALE)
+                .role(Role.MEMBER)
+                .build();
+
+        return memberRepository.save(member);
+    }
+
+    public Member createGuest() {
+        Member member = Member.builder()
+                .name("게스트")
+                .password(passwordEncoder.encode("password"))
+                .nickname("게스트")
+                .email("guest@email.com")
+                .birth(LocalDate.of(2015, 6, 22))
+                .gender(Gender.FEMALE)
+                .role(Role.GUEST)
+                .build();
+
+        return memberRepository.save(member);
+    }
+
+    public void setAuthentication(Member member) {
+        CustomUserDetails customUserDetails = new CustomUserDetails(member.getId(), member.getRole(), member.getEmail());
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                customUserDetails,
+                null,
+                List.of(new SimpleGrantedAuthority(member.getRole().getValue()))
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    }
+
+    public void clearAuthentication() {
+        SecurityContextHolder.clearContext();
     }
 }
