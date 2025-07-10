@@ -285,8 +285,19 @@ public class MemberService {
      * @return 회원
      * @throws CustomException 해당 회원이 없을 시 발생
      */
-    private Member findMemberById(Long memberId) {
+    public Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
+    /**
+     * 회원 식별자 ID로 활성화 상태의 회원 조회
+     * @param memberId 회원 식별자 ID
+     * @return 회원
+     * @throws CustomException 해당 회원이 없을 시 발생
+     */
+    public Member findActiveMemberById(Long memberId) {
+        return memberRepository.findActiveMemberById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
     }
 

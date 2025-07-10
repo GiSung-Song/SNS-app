@@ -1,4 +1,4 @@
-package com.outsta.sns.domain.profile;
+package com.outsta.sns.domain.profile.entity;
 
 import com.outsta.sns.domain.BaseTimeEntity;
 import com.outsta.sns.domain.member.entity.Member;
@@ -6,12 +6,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "member_profile_image")
+@Table(name = "profile_image")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class MemberProfileImage extends BaseTimeEntity {
+public class ProfileImage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

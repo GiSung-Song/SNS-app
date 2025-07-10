@@ -2,6 +2,7 @@ package com.outsta.sns.domain.profile;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import com.outsta.sns.domain.profile.entity.ProfileImage;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -14,7 +15,7 @@ import com.querydsl.core.types.dsl.PathInits;
  * QMemberProfileImage is a Querydsl query type for MemberProfileImage
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QMemberProfileImage extends EntityPathBase<MemberProfileImage> {
+public class QMemberProfileImage extends EntityPathBase<ProfileImage> {
 
     private static final long serialVersionUID = 1709067350L;
 
@@ -46,10 +47,10 @@ public class QMemberProfileImage extends EntityPathBase<MemberProfileImage> {
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QMemberProfileImage(String variable) {
-        this(MemberProfileImage.class, forVariable(variable), INITS);
+        this(ProfileImage.class, forVariable(variable), INITS);
     }
 
-    public QMemberProfileImage(Path<? extends MemberProfileImage> path) {
+    public QMemberProfileImage(Path<? extends ProfileImage> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
@@ -58,10 +59,10 @@ public class QMemberProfileImage extends EntityPathBase<MemberProfileImage> {
     }
 
     public QMemberProfileImage(PathMetadata metadata, PathInits inits) {
-        this(MemberProfileImage.class, metadata, inits);
+        this(ProfileImage.class, metadata, inits);
     }
 
-    public QMemberProfileImage(Class<? extends MemberProfileImage> type, PathMetadata metadata, PathInits inits) {
+    public QMemberProfileImage(Class<? extends ProfileImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new com.outsta.sns.domain.member.entity.QMember(forProperty("member")) : null;
     }

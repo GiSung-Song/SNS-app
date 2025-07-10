@@ -1,4 +1,4 @@
-package com.outsta.sns.domain.block;
+package com.outsta.sns.domain.block.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QBlock extends EntityPathBase<Block> {
 
-    private static final long serialVersionUID = 1685081991L;
+    private static final long serialVersionUID = 1918149192L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 

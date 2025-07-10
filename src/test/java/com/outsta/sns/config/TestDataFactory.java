@@ -1,8 +1,12 @@
 package com.outsta.sns.config;
 
 import com.outsta.sns.common.config.security.CustomUserDetails;
+import com.outsta.sns.domain.block.entity.Block;
+import com.outsta.sns.domain.block.repository.BlockRepository;
 import com.outsta.sns.domain.enums.Gender;
 import com.outsta.sns.domain.enums.Role;
+import com.outsta.sns.domain.follow.entity.Follow;
+import com.outsta.sns.domain.follow.repository.FollowRepository;
 import com.outsta.sns.domain.member.repository.MemberRepository;
 import com.outsta.sns.domain.member.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,12 @@ public class TestDataFactory {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private BlockRepository blockRepository;
+
+    @Autowired
+    private FollowRepository followRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -78,6 +88,24 @@ public class TestDataFactory {
                 .build();
 
         return memberRepository.save(member);
+    }
+
+    public Block createBlock(Member blocker, Member blocked) {
+        Block block = Block.builder()
+                .blocker(blocker)
+                .blocked(blocked)
+                .build();
+
+        return blockRepository.save(block);
+    }
+
+    public Follow createFollow(Member follower, Member following) {
+        Follow follow = Follow.builder()
+                .follower(follower)
+                .following(following)
+                .build();
+
+        return followRepository.save(follow);
     }
 
     public void setAuthentication(Member member) {

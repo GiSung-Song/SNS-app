@@ -1,6 +1,7 @@
 package com.outsta.sns.common.config.security;
 
 import org.springframework.http.HttpMethod;
+import org.springframework.util.AntPathMatcher;
 
 /**
  * 인증 예외 경로 DTO
@@ -11,6 +12,8 @@ import org.springframework.http.HttpMethod;
  */
 public record PermitPass(HttpMethod method, String pathPrefix) {
 
+    private static final AntPathMatcher pathMatcher = new AntPathMatcher();
+
     /**
      * 현재 요청의 메서드와 경로가 일치하는지 확인
      *
@@ -19,6 +22,7 @@ public record PermitPass(HttpMethod method, String pathPrefix) {
      * @return 메서드와 경로가 일치하면 true, 아니면 false
      */
     public boolean matches(String reqMethod, String reqPath) {
-        return (method == null || method.name().equalsIgnoreCase(reqMethod)) && reqPath.startsWith(pathPrefix);
+        return (method == null || method.name().equalsIgnoreCase(reqMethod))
+                && pathMatcher.match(pathPrefix, reqPath);
     }
 }

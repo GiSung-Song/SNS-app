@@ -37,6 +37,9 @@ public class TestSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/members/code-resend").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/members/code-verification").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/members/*/follower").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/members/*/following").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())

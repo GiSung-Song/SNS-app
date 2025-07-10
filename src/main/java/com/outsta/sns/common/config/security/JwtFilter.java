@@ -37,6 +37,9 @@ public class JwtFilter extends OncePerRequestFilter {
             new PermitPass(HttpMethod.POST, "/api/auth/login"),
             new PermitPass(HttpMethod.POST, "/api/auth/reIssue"),
             new PermitPass(HttpMethod.POST, "/api/members"),
+            new PermitPass(HttpMethod.GET, "/api/members/{memberId}"),
+            new PermitPass(HttpMethod.GET, "/api/members/{memberId}/follower"),
+            new PermitPass(HttpMethod.GET, "/api/members/{memberId}/following"),
             new PermitPass(HttpMethod.GET, "/api/members/check-nickname"),
             new PermitPass(HttpMethod.GET, "/api/members/check-email"),
             new PermitPass(null, "/v3/api-docs"),
@@ -55,62 +58,51 @@ public class JwtFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
 
-        // 인증 예외 경로 검사
-        boolean isPermit = PASS_PATHS.stream()
-                .anyMatch(p -> p.matches(method, requestURI));
-
-        if (isPermit) {
-            // 예외 경로는 다음 필터로 이동
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         // Authorization 헤더 값
         String requestHeader = request.getHeader("Authorization");
 
-        // 헤더가 없거나 Bearer 토큰 형식이 아니면 401 반환
-        if (!StringUtils.hasText(requestHeader) || !requestHeader.startsWith("Bearer ")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        // 인증 예외 경로 검사
+        boolean isPermitPass = PASS_PATHS.stream()
+                .anyMatch(p -> p.matches(method, requestURI));
 
-            return;
+        // 토큰 여부
+        boolean hasToken = StringUtils.hasText(requestHeader) && requestHeader.startsWith("Bearer ");
+
+        if (hasToken) {
+            // Bearer 토큰에서 JWT AccessToken 문자열 추출
+            String accessToken = requestHeader.substring(7);
+
+            // 토큰 유효성 검사 실패 시 OR 로그아웃 시 401 반환
+            if (!jwtProvider.validateToken(accessToken) || isLogout(accessToken)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            // 토큰 파싱하여 사용자 정보 추출
+            JwtPayload jwtPayload = jwtProvider.parseAccessToken(accessToken);
+
+            Long memberId = jwtPayload.getId();
+            String email = jwtPayload.getEmail();
+            Role role = Role.valueOf(jwtPayload.getRole());
+
+            // 사용자 인증 객체 생성
+            CustomUserDetails customUserDetails = new CustomUserDetails(memberId, role, email);
+
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    customUserDetails,
+                    null,
+                    List.of(new SimpleGrantedAuthority(role.getValue()))
+            );
+
+            // 기존 SecurityContext 초기화 후 인증 정보 저장
+            SecurityContextHolder.clearContext();
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        } else {
+            if (!isPermitPass) {
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
-
-        // Bearer 토큰에서 JWT AccessToken 문자열 추출
-        String accessToken = requestHeader.substring(7);
-
-        // 토큰 유효성 검사 실패 시 401 반환
-        if (!jwtProvider.validateToken(accessToken)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-
-            return;
-        }
-
-        // 로그아웃 여부 확인
-        if (isLogout(accessToken)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-
-            return;
-        }
-
-        // 토큰 파싱하여 사용자 정보 추출
-        JwtPayload jwtPayload = jwtProvider.parseAccessToken(accessToken);
-
-        Long memberId = jwtPayload.getId();
-        String email = jwtPayload.getEmail();
-        Role role = Role.valueOf(jwtPayload.getRole());
-
-        // 사용자 인증 객체 생성
-        CustomUserDetails customUserDetails = new CustomUserDetails(memberId, role, email);
-
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                customUserDetails,
-                null,
-                List.of(new SimpleGrantedAuthority(role.getValue()))
-        );
-
-        // 기존 SecurityContext 초기화 후 인증 정보 저장
-        SecurityContextHolder.clearContext();
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         filterChain.doFilter(request, response);
     }

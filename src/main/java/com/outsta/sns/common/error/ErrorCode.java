@@ -32,6 +32,15 @@ public enum ErrorCode {
     /** 유효하지 않은 이메일 혹은 비밀번호 : 401 반환 */
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "이메일 혹은 비밀번호를 확인해주세요."),
 
+    /** 차단 상태 : 403 반환 */
+    BLOCK_MEMBER(HttpStatus.FORBIDDEN, "차단 상태로 인해 접근이 제한됩니다."),
+
+    /** 비공개 : 403 반환 */
+    VISIBILITY_PRIVATE(HttpStatus.FORBIDDEN, "비공개입니다."),
+
+    /** 팔로워 전용 : 403 반환 */
+    VISIBILITY_FOLLOWER_ONLY(HttpStatus.FORBIDDEN, "팔로워 전용입니다."),
+
     /** 존재하지 않는 회원 : 404 반환 */
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 
@@ -43,6 +52,12 @@ public enum ErrorCode {
 
     /** 중복된 회원 : 409 반환 */
     DUPLICATE_MEMBER(HttpStatus.CONFLICT, "중복된 회원입니다."),
+
+    /** 이미 차단한 회원 : 409 반환 */
+    DUPLICATE_BLOCKED(HttpStatus.CONFLICT, "이미 차단한 회원입니다."),
+
+    /** 이미 팔로우한 회원 : 409 반환 */
+    DUPLICATE_FOLLOW(HttpStatus.CONFLICT, "이미 팔로우한 회원입니다."),
 
     /** 이미 인증된 회원 : 409 반환 */
     ALREADY_AUTHENTICATED_MEMBER(HttpStatus.CONFLICT, "이미 인증된 회원입니다."),

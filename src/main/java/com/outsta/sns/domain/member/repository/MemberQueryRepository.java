@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 /**
- * 회원 조회용 커스텀 쿼리
+ * 회원 엔티티 조회용 커스텀 쿼리
  */
 @RequiredArgsConstructor
 @Repository

@@ -1,4 +1,4 @@
-package com.outsta.sns.domain.follow;
+package com.outsta.sns.domain.follow.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QFollow extends EntityPathBase<Follow> {
 
-    private static final long serialVersionUID = 1075404201L;
+    private static final long serialVersionUID = -613852316L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
