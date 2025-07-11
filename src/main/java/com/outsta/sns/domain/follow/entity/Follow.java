@@ -19,14 +19,17 @@ import lombok.*;
 @Builder
 public class Follow extends BaseTimeEntity {
 
+    /** 팔로우 식별자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 팔로우한 회원 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "follower_id", nullable = false)
     private Member follower;
 
+    /** 팔로우하는 대상 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "following_id", nullable = false)
     private Member following;

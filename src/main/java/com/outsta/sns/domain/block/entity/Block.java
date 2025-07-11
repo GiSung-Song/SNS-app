@@ -19,14 +19,17 @@ import lombok.*;
 @Builder
 public class Block extends BaseTimeEntity {
 
+    /** 차단 식별자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 차단한 회원 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "blocker_id", nullable = false)
     private Member blocker;
 
+    /** 차단하는 대상 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "blocked_id", nullable = false)
     private Member blocked;

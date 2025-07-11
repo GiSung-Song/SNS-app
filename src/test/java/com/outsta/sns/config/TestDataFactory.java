@@ -9,6 +9,9 @@ import com.outsta.sns.domain.follow.entity.Follow;
 import com.outsta.sns.domain.follow.repository.FollowRepository;
 import com.outsta.sns.domain.member.repository.MemberRepository;
 import com.outsta.sns.domain.member.entity.Member;
+import com.outsta.sns.domain.profile.dto.request.ProfileImageRequest;
+import com.outsta.sns.domain.profile.entity.ProfileImage;
+import com.outsta.sns.domain.profile.repository.ProfileImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,6 +33,9 @@ public class TestDataFactory {
 
     @Autowired
     private FollowRepository followRepository;
+
+    @Autowired
+    private ProfileImageRepository profileImageRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -106,6 +112,18 @@ public class TestDataFactory {
                 .build();
 
         return followRepository.save(follow);
+    }
+
+    public ProfileImage createProfileImage(Member member, int i, boolean represent) {
+        ProfileImage profileImage = ProfileImage.builder()
+                .member(member)
+                .imageUrl("imageUrl" + i)
+                .originName("originName" + i)
+                .fileName("fileName" + i)
+                .represent(represent)
+                .build();
+
+        return profileImageRepository.save(profileImage);
     }
 
     public void setAuthentication(Member member) {

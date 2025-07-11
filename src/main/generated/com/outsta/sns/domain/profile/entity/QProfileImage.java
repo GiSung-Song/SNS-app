@@ -1,8 +1,7 @@
-package com.outsta.sns.domain.profile;
+package com.outsta.sns.domain.profile.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.outsta.sns.domain.profile.entity.ProfileImage;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -12,16 +11,16 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QMemberProfileImage is a Querydsl query type for MemberProfileImage
+ * QProfileImage is a Querydsl query type for ProfileImage
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QMemberProfileImage extends EntityPathBase<ProfileImage> {
+public class QProfileImage extends EntityPathBase<ProfileImage> {
 
-    private static final long serialVersionUID = 1709067350L;
+    private static final long serialVersionUID = -1518073997L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QMemberProfileImage memberProfileImage = new QMemberProfileImage("memberProfileImage");
+    public static final QProfileImage profileImage = new QProfileImage("profileImage");
 
     public final com.outsta.sns.domain.QBaseTimeEntity _super = new com.outsta.sns.domain.QBaseTimeEntity(this);
 
@@ -46,23 +45,23 @@ public class QMemberProfileImage extends EntityPathBase<ProfileImage> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
-    public QMemberProfileImage(String variable) {
+    public QProfileImage(String variable) {
         this(ProfileImage.class, forVariable(variable), INITS);
     }
 
-    public QMemberProfileImage(Path<? extends ProfileImage> path) {
+    public QProfileImage(Path<? extends ProfileImage> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QMemberProfileImage(PathMetadata metadata) {
+    public QProfileImage(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QMemberProfileImage(PathMetadata metadata, PathInits inits) {
+    public QProfileImage(PathMetadata metadata, PathInits inits) {
         this(ProfileImage.class, metadata, inits);
     }
 
-    public QMemberProfileImage(Class<? extends ProfileImage> type, PathMetadata metadata, PathInits inits) {
+    public QProfileImage(Class<? extends ProfileImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new com.outsta.sns.domain.member.entity.QMember(forProperty("member")) : null;
     }

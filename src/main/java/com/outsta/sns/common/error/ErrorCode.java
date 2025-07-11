@@ -44,6 +44,9 @@ public enum ErrorCode {
     /** 존재하지 않는 회원 : 404 반환 */
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 
+    /** 존재하지 않는 이미지 : 404 반환 */
+    NOT_FOUND_PROFILE_IMAGE(HttpStatus.NOT_FOUND, "존재하지 않는 프로필 이미지입니다."),
+
     /** 중복된 닉네임 : 409 반환 */
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임입니다."),
 

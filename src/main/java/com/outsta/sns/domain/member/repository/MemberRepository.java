@@ -3,6 +3,7 @@ package com.outsta.sns.domain.member.repository;
 import com.outsta.sns.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -22,9 +23,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     /** 이메일로 활성화된 회원 조회 */
     @Query("SELECT m FROM Member m WHERE m.email = :email AND m.activation = 'ACTIVE'")
-    Optional<Member> findActiveMemberByEmail(String email);
+    Optional<Member> findActiveMemberByEmail(@Param("email") String email);
 
     /** 식별자 ID로 활성화된 회원 조회 */
     @Query("SELECT m FROM Member m WHERE m.id = :id AND m.activation = 'ACTIVE'")
-    Optional<Member> findActiveMemberById(Long id);
+    Optional<Member> findActiveMemberById(@Param("id") Long id);
 }
