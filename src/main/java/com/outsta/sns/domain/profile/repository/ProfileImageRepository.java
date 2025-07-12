@@ -13,6 +13,8 @@ public interface ProfileImageRepository extends JpaRepository<ProfileImage, Long
     @Query("SELECT pi FROM ProfileImage pi WHERE pi.member.id = :memberId AND pi.represent = true")
     Optional<ProfileImage> findRepresentImageByMemberId(@Param("memberId") Long memberId);
 
+    Optional<ProfileImage> findFirstByMemberIdOrderByCreatedAtDesc(Long memberId);
+
     @Query("SELECT pi FROM ProfileImage pi WHERE pi.member.id = :memberId ORDER BY pi.represent DESC, pi.createdAt DESC")
     List<ProfileImage> findProfileImagesByMemberId(@Param("memberId") Long memberId);
 

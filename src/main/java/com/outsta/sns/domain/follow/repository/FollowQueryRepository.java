@@ -1,6 +1,8 @@
 package com.outsta.sns.domain.follow.repository;
 
+import com.outsta.sns.domain.follow.dto.FollowerCountDto;
 import com.outsta.sns.domain.follow.dto.FollowerListResponse;
+import com.outsta.sns.domain.follow.dto.FollowingCountDto;
 import com.outsta.sns.domain.follow.dto.FollowingListResponse;
 import com.outsta.sns.domain.follow.entity.QFollow;
 import com.querydsl.core.types.Projections;
@@ -18,6 +20,7 @@ import java.util.List;
 public class FollowQueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final QFollow follow = QFollow.follow;
 
     /**
      * 이미 팔로우한 회원인지 체크
@@ -27,8 +30,6 @@ public class FollowQueryRepository {
      * @return 팔로우되어 있으면 true, 아니면 false 반환
      */
     public boolean existsByLoginIdAndMemberId(Long loginId, Long memberId) {
-        QFollow follow = QFollow.follow;
-
         return jpaQueryFactory
                 .selectOne()
                 .from(follow)
@@ -45,8 +46,6 @@ public class FollowQueryRepository {
      * @return 회원의 팔로워 목록
      */
     public List<FollowerListResponse.FollowerMemberDto> getFollowerList(Long memberId) {
-        QFollow follow = QFollow.follow;
-
         return jpaQueryFactory
                 .select(Projections.constructor(
                         FollowerListResponse.FollowerMemberDto.class,
@@ -65,8 +64,6 @@ public class FollowQueryRepository {
      * @return 회원의 팔로잉 목록
      */
     public List<FollowingListResponse.FollowingMemberDto> getFollowingList(Long memberId) {
-        QFollow follow = QFollow.follow;
-
         return jpaQueryFactory
                 .select(Projections.constructor(
                         FollowingListResponse.FollowingMemberDto.class,
@@ -79,4 +76,32 @@ public class FollowQueryRepository {
                 .fetch();
     }
 
+    /**
+     * 팔로워 수 조회
+     * @param memberId 회원 식별자 ID
+     * @return 해당 회원의 팔로워 수
+     */
+    public FollowerCountDto getFollowerCount(Long memberId) {
+        Long count = jpaQueryFactory
+                .select(follow.count())
+                .from(follow)
+                .where(follow.following.id.eq(memberId))
+                .fetchOne();
+
+        return new FollowerCountDto(count != null ? count : 0L);
+    }
+
+    /**
+     * 팔로잉 수 조회
+     * @param memberId 회원 식별자 ID
+     * @return 해당 회원의 팔로잉 수
+     */
+    public FollowingCountDto getFollowingCount(Long memberId) {
+        Long count = jpaQueryFactory
+                .select(follow.count())
+                .from(follow)
+                .where(follow.follower.id.eq(memberId))
+                .fetchOne();
+        return new FollowingCountDto(count != null ? count : 0L);
+    }
 }

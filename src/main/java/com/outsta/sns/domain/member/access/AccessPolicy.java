@@ -22,15 +22,12 @@ public class AccessPolicy {
      * 공통 로직
      *
      * @param loginId 현재 로그인한 회원의 식별자 ID
-     * @param member  조회 하려는 회원
      */
-    public void checkVisibilityAndBlock(Long loginId, Member member) {
+    public void checkVisibilityAndBlock(Long loginId, Long memberId, Visibility visibility) {
         // 차단 여부 확인
-        if (loginId != null && blockFollowRelationService.isBlockedWhoever(loginId, member.getId())) {
+        if (loginId != null && blockFollowRelationService.isBlockedWhoever(loginId, memberId)) {
             throw new CustomException(ErrorCode.BLOCK_MEMBER);
         }
-
-        Visibility visibility = member.getVisibility();
 
         // 비공개
         if (visibility == Visibility.PRIVATE) {
@@ -39,7 +36,7 @@ public class AccessPolicy {
 
         // 팔로워 전용
         if (visibility == Visibility.FOLLOWER_ONLY) {
-            if (loginId == null || !followQueryRepository.existsByLoginIdAndMemberId(loginId, member.getId())) {
+            if (loginId == null || !followQueryRepository.existsByLoginIdAndMemberId(loginId, memberId)) {
                 throw new CustomException(ErrorCode.VISIBILITY_FOLLOWER_ONLY);
             }
         }

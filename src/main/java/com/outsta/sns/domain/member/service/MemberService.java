@@ -123,7 +123,8 @@ public class MemberService {
             throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
-        Member member = findMemberById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         member.updateNickname(request.nickname());
 
@@ -138,7 +139,8 @@ public class MemberService {
      */
     @Transactional
     public MemberIdResponse updatePassword(Long memberId, PasswordUpdateRequest request) {
-        Member member = findMemberById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         member.updatePassword(passwordEncoder.encode(request.password()));
 
@@ -151,7 +153,8 @@ public class MemberService {
      */
     @Transactional
     public void deleteMember(Long memberId) {
-        Member member = findMemberById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         member.deleteMember();
     }
@@ -165,7 +168,8 @@ public class MemberService {
      */
     @Transactional
     public MemberIdResponse updatePrivacy(Long memberId, PrivacyUpdateRequest request) {
-        Member member = findMemberById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 
         member.updatePrivacy(Visibility.valueOf(request.visibility()));
 
@@ -272,33 +276,6 @@ public class MemberService {
             String code = generateRandomValue();
             emailService.sendCode(member.getEmail(), code);
         }
-    }
-
-    //TODO : 회원 정보 조회
-    @Transactional(readOnly = true)
-    public void getMemberInfo(Long memberId) {
-    }
-
-    /**
-     * 회원 식별자 ID로 회원 조회
-     * @param memberId 회원 식별자 ID
-     * @return 회원
-     * @throws CustomException 해당 회원이 없을 시 발생
-     */
-    public Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-    }
-
-    /**
-     * 회원 식별자 ID로 활성화 상태의 회원 조회
-     * @param memberId 회원 식별자 ID
-     * @return 회원
-     * @throws CustomException 해당 회원이 없을 시 발생
-     */
-    public Member findActiveMemberById(Long memberId) {
-        return memberRepository.findActiveMemberById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
     /**

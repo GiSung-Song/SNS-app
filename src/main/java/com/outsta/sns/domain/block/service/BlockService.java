@@ -7,7 +7,7 @@ import com.outsta.sns.domain.block.entity.Block;
 import com.outsta.sns.domain.block.repository.BlockQueryRepository;
 import com.outsta.sns.domain.block.repository.BlockRepository;
 import com.outsta.sns.domain.member.entity.Member;
-import com.outsta.sns.domain.member.service.MemberService;
+import com.outsta.sns.domain.member.service.MemberUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,7 @@ public class BlockService {
 
     private final BlockRepository blockRepository;
     private final BlockQueryRepository blockQueryRepository;
-    private final MemberService memberService;
+    private final MemberUtilService memberUtilService;
     private final BlockFollowRelationService blockFollowRelationService;
 
     /**
@@ -46,8 +46,8 @@ public class BlockService {
             throw new CustomException(ErrorCode.DUPLICATE_BLOCKED);
         }
 
-        Member blocker = memberService.findActiveMemberById(loginId);
-        Member blocked = memberService.findActiveMemberById(memberId);
+        Member blocker = memberUtilService.findActiveMemberById(loginId);
+        Member blocked = memberUtilService.findActiveMemberById(memberId);
 
         blockFollowRelationService.deleteFollowRelation(loginId, memberId);
 

@@ -28,14 +28,10 @@ class EmailServiceTest {
     @InjectMocks
     private EmailService emailService;
 
-    @BeforeEach
-    void setUp() {
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-    }
-
     @Test
     void 인증번호_전송_성공() {
         doNothing().when(javaMailSender).send(any(SimpleMailMessage.class));
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
         emailService.sendCode("test@test.com", "1234123412");
 

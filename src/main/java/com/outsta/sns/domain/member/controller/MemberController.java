@@ -6,8 +6,12 @@ import com.outsta.sns.domain.member.dto.request.*;
 import com.outsta.sns.domain.member.dto.response.CheckEmailResponse;
 import com.outsta.sns.domain.member.dto.response.CheckNicknameResponse;
 import com.outsta.sns.domain.member.dto.response.MemberIdResponse;
+import com.outsta.sns.domain.member.dto.response.MemberInfoResponse;
+import com.outsta.sns.domain.member.service.MemberQueryService;
 import com.outsta.sns.domain.member.service.MemberService;
+import com.outsta.sns.domain.profile.dto.response.ProfileImageResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
 
     /**
      * 회원 가입 처리
@@ -271,5 +276,38 @@ public class MemberController {
         memberService.reSendCode(request);
 
         return ResponseEntity.ok(SuccessResponse.of());
+    }
+
+    /**
+     * 회원 정보 조회
+     * - 자신 혹은 상대방
+     *
+     * @param memberId    조회 하려는 회원의 식별자 ID
+     * @param userDetails 현재 로그인한(인증된) 회원 객체 (사용자 식별자 ID, 이메일, Role)
+     * @return 회원 정보
+     */
+    @Operation(summary = "회원 정보 조회", description = "회원 정보를 조회 합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 경로 변수"),
+            @ApiResponse(responseCode = "403", description = "접근 권한 없음(차단/팔로워 전용/비공개)"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원"),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+    })
+    @GetMapping("/{memberId}")
+    public ResponseEntity<SuccessResponse<MemberInfoResponse>> reSendCode(
+            @Parameter(description = "회원 식별자 ID", example = "1")
+            @PathVariable("memberId") Long memberId,
+
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long loginId = (userDetails != null) ? userDetails.id() : null;
+        boolean isMe = loginId != null && loginId.equals(memberId);
+
+        MemberInfoResponse memberInfoResponse = isMe
+                ? memberQueryService.getMyInfo(loginId)
+                : memberQueryService.getMemberInfo(loginId, memberId);
+
+        return ResponseEntity.ok(SuccessResponse.of(memberInfoResponse));
     }
 }

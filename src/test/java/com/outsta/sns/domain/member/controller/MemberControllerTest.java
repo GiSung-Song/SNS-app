@@ -10,6 +10,7 @@ import com.outsta.sns.domain.member.dto.request.*;
 import com.outsta.sns.domain.member.email.EmailService;
 import com.outsta.sns.domain.member.entity.Member;
 import com.outsta.sns.domain.member.repository.MemberRepository;
+import com.outsta.sns.domain.profile.entity.ProfileImage;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -675,11 +676,146 @@ class MemberControllerTest extends ControllerTestSupport {
         }
     }
 
-    private Member findByEmail(String email) {
-        return memberRepository.findAll().stream()
-                .filter(m -> m.getEmail().equalsIgnoreCase(email))
-                .findFirst()
-                .orElseThrow();
+    @Nested
+    class 회원_정보_조회_API_테스트 {
+
+        @Test
+        void 내_정보_조회_정상() throws Exception {
+            Member tester = testDataFactory.createTester();
+            Member faker = testDataFactory.createFaker();
+            Member dancer = testDataFactory.createDancer();
+
+            testDataFactory.createFollow(faker, tester);
+            testDataFactory.createFollow(tester, faker);
+            testDataFactory.createFollow(dancer, tester);
+
+            ProfileImage profileImage = testDataFactory.createProfileImage(tester, 1, true);
+
+            testDataFactory.setAuthentication(tester);
+
+            mockMvc.perform(get("/api/members/{memberId}", tester.getId()))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.id").value(tester.getId()))
+                    .andExpect(jsonPath("$.data.profileImageId").value(profileImage.getId()))
+                    .andExpect(jsonPath("$.data.followerCount").value(2))
+                    .andExpect(jsonPath("$.data.followingCount").value(1));
+        }
+
+        @Test
+        void 회원_정보_조회_전체공개_정상() throws Exception {
+            Member tester = testDataFactory.createTester();
+            Member faker = testDataFactory.createFaker();
+            Member dancer = testDataFactory.createDancer();
+
+            testDataFactory.createFollow(faker, tester);
+            testDataFactory.createFollow(tester, faker);
+
+            ProfileImage profileImage = testDataFactory.createProfileImage(tester, 1, true);
+
+            testDataFactory.setAuthentication(dancer);
+
+            mockMvc.perform(get("/api/members/{memberId}", tester.getId()))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.id").value(tester.getId()))
+                    .andExpect(jsonPath("$.data.profileImageId").value(profileImage.getId()))
+                    .andExpect(jsonPath("$.data.followerCount").value(1))
+                    .andExpect(jsonPath("$.data.followingCount").value(1));
+        }
+
+        @Test
+        void 회원이_없는_경우_400_반환() throws Exception {
+            Member tester = testDataFactory.createTester();
+            Member faker = testDataFactory.createFaker();
+            Member dancer = testDataFactory.createDancer();
+
+            testDataFactory.createFollow(faker, tester);
+            testDataFactory.createFollow(tester, faker);
+            testDataFactory.createFollow(dancer, tester);
+
+            testDataFactory.setAuthentication(dancer);
+
+            mockMvc.perform(get("/api/members/{memberId}", 4321432142L))
+                    .andDo(print())
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        void 차단했거나_차단_당했을_경우_403_반환() throws Exception {
+            Member tester = testDataFactory.createTester();
+            Member faker = testDataFactory.createFaker();
+            Member dancer = testDataFactory.createDancer();
+
+            testDataFactory.createFollow(faker, tester);
+            testDataFactory.createFollow(tester, faker);
+
+            testDataFactory.createBlock(tester, dancer);
+
+            testDataFactory.setAuthentication(dancer);
+
+            mockMvc.perform(get("/api/members/{memberId}", tester.getId()))
+                    .andDo(print())
+                    .andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 팔로워_전용인데_팔로워가_아닌_경우_403_반환() throws Exception {
+            Member tester = testDataFactory.createTester();
+            Member faker = testDataFactory.createFaker();
+            Member dancer = testDataFactory.createDancer();
+
+            testDataFactory.createFollow(faker, tester);
+            testDataFactory.createFollow(tester, faker);
+
+            tester.updatePrivacy(Visibility.FOLLOWER_ONLY);
+
+            testDataFactory.setAuthentication(dancer);
+
+            mockMvc.perform(get("/api/members/{memberId}", tester.getId()))
+                    .andDo(print())
+                    .andExpect(status().isForbidden());
+        }
+
+        @Test
+        void 팔로워_전용인데_팔로워인_경우_정상() throws Exception {
+            Member tester = testDataFactory.createTester();
+            Member faker = testDataFactory.createFaker();
+            Member dancer = testDataFactory.createDancer();
+
+            testDataFactory.createFollow(faker, tester);
+            testDataFactory.createFollow(tester, faker);
+            testDataFactory.createFollow(dancer, tester);
+
+            ProfileImage profileImage = testDataFactory.createProfileImage(tester, 1, true);
+
+            testDataFactory.setAuthentication(dancer);
+
+            mockMvc.perform(get("/api/members/{memberId}", tester.getId()))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.id").value(tester.getId()))
+                    .andExpect(jsonPath("$.data.profileImageId").value(profileImage.getId()))
+                    .andExpect(jsonPath("$.data.followerCount").value(2))
+                    .andExpect(jsonPath("$.data.followingCount").value(1));
+        }
+
+        @Test
+        void 비공개인_경우_403_반환() throws Exception {
+            Member tester = testDataFactory.createTester();
+            Member faker = testDataFactory.createFaker();
+
+            testDataFactory.createFollow(faker, tester);
+            testDataFactory.createFollow(tester, faker);
+
+            tester.updatePrivacy(Visibility.PRIVATE);
+
+            testDataFactory.setAuthentication(faker);
+
+            mockMvc.perform(get("/api/members/{memberId}", tester.getId()))
+                    .andDo(print())
+                    .andExpect(status().isForbidden());
+        }
     }
 
 }

@@ -2,7 +2,6 @@ package com.outsta.sns.domain.block.repository;
 
 import com.outsta.sns.domain.block.dto.BlockListResponse;
 import com.outsta.sns.domain.block.entity.QBlock;
-import com.outsta.sns.domain.member.entity.QMember;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BlockQueryRepository {
     private final JPAQueryFactory queryFactory;
+    private final QBlock block = QBlock.block;
 
     /**
      * 이미 차단한 회원인지 체크
@@ -26,8 +26,6 @@ public class BlockQueryRepository {
      * @return 차단 여부
      */
     public boolean existsByLoginIdAndMemberId(Long loginId, Long memberId) {
-        QBlock block = QBlock.block;
-
         return queryFactory
                 .selectOne()
                 .from(block)
@@ -45,8 +43,6 @@ public class BlockQueryRepository {
      * @return List<BlockListResponse.BlockMemberDto> 차단한 회원 목록 (회원 식별자 ID, 닉네임)
      */
     public List<BlockListResponse.BlockMemberDto> getBlockedMemberList(Long loginId) {
-        QBlock block = QBlock.block;
-
         return queryFactory
                 .select(Projections.constructor(
                         BlockListResponse.BlockMemberDto.class,
@@ -66,8 +62,6 @@ public class BlockQueryRepository {
      * @return 한쪽이라도 차단했으면 true, 아니면 false 반환
      */
     public boolean existsBlockWhoever(Long loginId, Long memberId) {
-        QBlock block = QBlock.block;
-
         return queryFactory
                 .selectOne()
                 .from(block)

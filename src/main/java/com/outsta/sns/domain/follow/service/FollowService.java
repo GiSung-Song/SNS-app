@@ -3,16 +3,21 @@ package com.outsta.sns.domain.follow.service;
 import com.outsta.sns.common.error.CustomException;
 import com.outsta.sns.common.error.ErrorCode;
 import com.outsta.sns.domain.block.service.BlockFollowRelationService;
-import com.outsta.sns.domain.enums.Visibility;
+import com.outsta.sns.domain.follow.dto.FollowerCountDto;
 import com.outsta.sns.domain.follow.dto.FollowerListResponse;
+import com.outsta.sns.domain.follow.dto.FollowingCountDto;
 import com.outsta.sns.domain.follow.dto.FollowingListResponse;
 import com.outsta.sns.domain.follow.entity.Follow;
 import com.outsta.sns.domain.follow.repository.FollowQueryRepository;
 import com.outsta.sns.domain.follow.repository.FollowRepository;
 import com.outsta.sns.domain.member.access.AccessPolicy;
+import com.outsta.sns.domain.member.dto.response.util.MemberAccessCheckDto;
 import com.outsta.sns.domain.member.entity.Member;
-import com.outsta.sns.domain.member.service.MemberService;
+import com.outsta.sns.domain.member.service.MemberUtilService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +34,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final FollowQueryRepository followQueryRepository;
     private final BlockFollowRelationService blockFollowRelationService;
-    private final MemberService memberService;
+    private final MemberUtilService memberUtilService;
     private final AccessPolicy accessPolicy;
 
     /**
@@ -40,6 +45,10 @@ public class FollowService {
      * @param memberId 팔로우하려는 회원의 식별자 ID
      * @throws CustomException 회원이 없거나, 자기 자신을 팔로우하려고 하는 경우, 차단한 경우, 이미 팔로우한 경우에 발생
      */
+    @Caching(evict = {
+            @CacheEvict(value = "followingCount", key = "#loginId"),
+            @CacheEvict(value = "followerCount", key = "#memberId")
+    })
     public void follow(Long loginId, Long memberId) {
         if (loginId.equals(memberId)) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
@@ -53,8 +62,8 @@ public class FollowService {
             throw new CustomException(ErrorCode.DUPLICATE_FOLLOW);
         }
 
-        Member follower = memberService.findActiveMemberById(loginId);
-        Member following = memberService.findActiveMemberById(memberId);
+        Member follower = memberUtilService.findActiveMemberById(loginId);
+        Member following = memberUtilService.findActiveMemberById(memberId);
 
         Follow follow = Follow.builder()
                 .follower(follower)
@@ -71,6 +80,10 @@ public class FollowService {
      * @param memberId 팔로우 취소 하려는 회원의 식별자 ID
      * @throws CustomException 회원이 없거나, 자기 자신을 팔로우 취소하려고 하는 경우, 팔로우하지 않은 경우에 발생
      */
+    @Caching(evict = {
+            @CacheEvict(value = "followingCount", key = "#loginId"),
+            @CacheEvict(value = "followerCount", key = "#memberId")
+    })
     public void cancelFollow(Long loginId, Long memberId) {
         if (loginId.equals(memberId)) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
@@ -103,8 +116,8 @@ public class FollowService {
      * @return 팔로워 목록 (회원 식별자 ID, 닉네임)
      */
     public FollowerListResponse getFollowerList(Long loginId, Long memberId) {
-        Member member = memberService.findActiveMemberById(memberId);
-        accessPolicy.checkVisibilityAndBlock(loginId, member);
+        MemberAccessCheckDto member = memberUtilService.getActiveMemberFollow(memberId);
+        accessPolicy.checkVisibilityAndBlock(loginId, member.id(), member.visibility());
 
         List<FollowerListResponse.FollowerMemberDto> followerList
                 = followQueryRepository.getFollowerList(memberId);
@@ -133,8 +146,8 @@ public class FollowService {
      * @return 팔로잉 목록 (회원 식별자 ID, 닉네임)
      */
     public FollowingListResponse getFollowingList(Long loginId, Long memberId) {
-        Member member = memberService.findActiveMemberById(memberId);
-        accessPolicy.checkVisibilityAndBlock(loginId, member);
+        MemberAccessCheckDto member = memberUtilService.getActiveMemberFollow(memberId);
+        accessPolicy.checkVisibilityAndBlock(loginId, member.id(), member.visibility());
 
         List<FollowingListResponse.FollowingMemberDto> followingList
                 = followQueryRepository.getFollowingList(memberId);
@@ -142,4 +155,25 @@ public class FollowService {
         return new FollowingListResponse(followingList);
     }
 
+    /**
+     * 회원의 팔로워 수 조회
+     *
+     * @param memberId 조회 하려는 회원의 식별자 ID
+     * @return 회원의 팔로워 수
+     */
+    @Cacheable(value = "followerCount", key = "#memberId")
+    public FollowerCountDto getFollowerCount(Long memberId) {
+        return followQueryRepository.getFollowerCount(memberId);
+    }
+
+    /**
+     * 회원의 팔로잉 수 조회
+     *
+     * @param memberId 조회 하려는 회원의 식별자 ID
+     * @return 회원의 팔로잉 수
+     */
+    @Cacheable(value = "followingCount", key = "#memberId")
+    public FollowingCountDto getFollowingCount(Long memberId) {
+        return followQueryRepository.getFollowingCount(memberId);
+    }
 }

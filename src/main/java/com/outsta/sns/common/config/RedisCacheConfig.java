@@ -29,9 +29,6 @@ public class RedisCacheConfig {
                 // 캐시 기본 만료 시간 30분
                 .entryTtl(Duration.ofMinutes(30))
 
-                // null 값 캐싱하지 않음
-                .disableCachingNullValues()
-
                 // Key 직렬화 방식 : 문자열 직렬화
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(

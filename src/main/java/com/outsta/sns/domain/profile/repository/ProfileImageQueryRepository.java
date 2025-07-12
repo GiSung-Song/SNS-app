@@ -9,10 +9,9 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class ProfileImageQueryRepository {
     private final JPAQueryFactory queryFactory;
+    private final QProfileImage profileImage = QProfileImage.profileImage;
 
     public boolean existsMyProfileImage(Long loginId, Long imageId) {
-        QProfileImage profileImage = QProfileImage.profileImage;
-
         return queryFactory
                 .selectOne()
                 .from(profileImage)
